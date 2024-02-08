@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="30dp"
     android:background="@color/bg"
-    tools:context=".GetStartedFragment">
+    tools:context=".fragment.GetStartedFragment">
 
     <TextView
         android:layout_width="match_parent"

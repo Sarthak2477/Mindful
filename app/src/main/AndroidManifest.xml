@@ -18,18 +18,18 @@
         android:theme="@style/Theme.Mindful"
         tools:targetApi="31">
         <activity
-            android:name=".ConfigureAppsActivity"
+            android:name=".activity.ConfigureAppsActivity"
             android:exported="false" />
         <activity
-            android:name=".AccessDelayActivity"
+            android:name=".activity.AccessDelayActivity"
             android:launchMode="singleTask"
             android:taskAffinity=""
             android:exported="false" />
         <activity
-            android:name=".SetupActivity"
+            android:name=".activity.SetupActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter>
@@ -40,7 +40,7 @@
         </activity>
 
         <service
-            android:name=".AppAccessibilityService"
+            android:name=".service.AppAccessibilityService"
             android:exported="true"
             android:label="Mindful"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">

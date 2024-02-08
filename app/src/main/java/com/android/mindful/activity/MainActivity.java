@@ -1,4 +1,4 @@
-package com.android.mindful;
+package com.android.mindful.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.mindful.service.AppAccessibilityService;
+import com.android.mindful.fragment.EditFragment;
+import com.android.mindful.R;
+import com.android.mindful.fragment.SettingsFragment;
+import com.android.mindful.fragment.StatsFragment;
 import com.android.mindful.managers.ManagePermissions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;

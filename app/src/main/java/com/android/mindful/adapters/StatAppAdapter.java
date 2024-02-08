@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.mindful.AppStats;
+import com.android.mindful.appinfo.AppStats;
 import com.android.mindful.R;
 
 import java.util.ArrayList;

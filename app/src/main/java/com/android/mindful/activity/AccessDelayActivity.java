@@ -1,4 +1,4 @@
-package com.android.mindful;
+package com.android.mindful.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +15,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ProgressBar;
+
+import com.android.mindful.R;
 
 import java.util.Calendar;
 import java.util.Map;

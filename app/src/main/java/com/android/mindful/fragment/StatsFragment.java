@@ -1,4 +1,4 @@
-   package com.android.mindful;
+   package com.android.mindful.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,17 +9,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.android.mindful.adapters.StatAppAdapter;
+import com.android.mindful.appinfo.AppStats;
+import com.android.mindful.R;
+import com.android.mindful.activity.ConfigureAppsActivity;
 import com.android.mindful.managers.ManageAppStats;
-import com.android.mindful.managers.ManageConfiguredApps;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 
@@ -57,13 +56,13 @@ import java.util.Set;
         });
 
 
-        RecyclerView recyclerView = view.findViewById(R.id.stat_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        try {
-            recyclerView.setAdapter(new StatAppAdapter(prepareAppStatList()));
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+//        RecyclerView recyclerView = view.findViewById(R.id.stat_recycler_view);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        try {
+//            recyclerView.setAdapter(new StatAppAdapter(prepareAppStatList()));
+//        } catch (PackageManager.NameNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
 
         return view;
 

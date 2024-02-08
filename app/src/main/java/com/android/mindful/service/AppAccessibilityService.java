@@ -1,7 +1,6 @@
-package com.android.mindful;
+package com.android.mindful.service;
 
 import  android.accessibilityservice.AccessibilityServiceInfo;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.usage.UsageEvents;
 import android.app.usage.UsageStats;
@@ -9,13 +8,11 @@ import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
-import android.os.Build;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
+
+import com.android.mindful.activity.AccessDelayActivity;
 
 import java.util.HashSet;
 import java.util.List;

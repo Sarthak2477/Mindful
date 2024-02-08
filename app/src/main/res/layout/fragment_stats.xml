@@ -6,7 +6,7 @@
     android:background="@color/bg"
     android:padding="20dp"
     android:orientation="vertical"
-    tools:context=".StatsFragment">
+    tools:context=".fragment.StatsFragment">
 
 
     <TextView

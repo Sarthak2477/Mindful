@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:padding="60dp"
     android:background="@color/bg"
-    tools:context=".GrantPermissionFragment">
+    tools:context=".fragment.GrantPermissionFragment">
 
 
     <ImageView

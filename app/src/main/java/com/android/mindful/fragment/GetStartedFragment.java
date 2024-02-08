@@ -1,4 +1,4 @@
-package com.android.mindful;
+package com.android.mindful.fragment;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.AppOpsManager;
@@ -12,6 +12,8 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.android.mindful.R;
 
 
 public class GetStartedFragment extends Fragment {

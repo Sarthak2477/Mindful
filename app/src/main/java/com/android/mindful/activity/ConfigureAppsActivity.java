@@ -1,4 +1,4 @@
-package com.android.mindful;
+package com.android.mindful.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.mindful.appinfo.AppInfo;
+import com.android.mindful.R;
 import com.android.mindful.adapters.CustomAdapter;
 import com.android.mindful.managers.ManageConfiguredApps;
 

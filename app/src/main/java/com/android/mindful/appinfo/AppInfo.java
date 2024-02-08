@@ -1,4 +1,4 @@
-package com.android.mindful;
+package com.android.mindful.appinfo;
 
 import android.graphics.drawable.Drawable;
 

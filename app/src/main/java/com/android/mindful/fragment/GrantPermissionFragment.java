@@ -1,4 +1,4 @@
-package com.android.mindful;
+package com.android.mindful.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,6 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.android.mindful.service.AppAccessibilityService;
+import com.android.mindful.R;
+import com.android.mindful.activity.MainActivity;
 import com.android.mindful.managers.ManagePermissions;
 
 public class GrantPermissionFragment extends Fragment {

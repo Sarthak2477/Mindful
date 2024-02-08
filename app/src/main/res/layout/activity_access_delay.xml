@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg"
     android:orientation="vertical"
-    tools:context=".AccessDelayActivity">
+    tools:context=".activity.AccessDelayActivity">
 
     <ProgressBar
         android:id="@+id/delay_progress_bar"

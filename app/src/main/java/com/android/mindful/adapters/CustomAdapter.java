@@ -9,8 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.mindful.AppInfo;
-import com.android.mindful.adapters.AppViewHolder;
+import com.android.mindful.appinfo.AppInfo;
 import com.android.mindful.R;
 import com.android.mindful.managers.ManageConfiguredApps;
 

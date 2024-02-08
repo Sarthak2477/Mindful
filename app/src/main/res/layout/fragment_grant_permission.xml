@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="60dp"
+    android:background="@color/bg"
+    tools:context=".GrantPermissionFragment">
+
+
+    <ImageView
+        android:layout_width="330dp"
+        android:layout_height="261dp"
+        android:src="@drawable/icon_settings" />
+
+    <Button
+        android:id="@+id/usage_access_btn"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/foreground"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:text="@string/usage_access_permissions"/>
+
+    <Button
+        android:id="@+id/accessibility_service_permissions_btn"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/foreground"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_below="@+id/usage_access_btn"
+        android:text="@string/accessibility_services_permissions"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="30dp"
+        android:id="@+id/continue_btn"
+        style="?attr/materialButtonOutlinedStyle"
+        android:text="Continue"/>
+
+
+</RelativeLayout>

@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_stats"
+        android:icon="@drawable/stats_icon"
+        android:title="Stats"
+         />
+
+    <item
+        android:id="@+id/action_edit"
+        android:icon="@drawable/edit_icon"
+        android:title="Edit"
+         />
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/settings_icon"
+        android:title="Settings"
+         />
+
+</menu>

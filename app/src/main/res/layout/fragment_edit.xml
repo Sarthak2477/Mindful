@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg"
+    android:padding="20dp"
+    tools:context=".EditFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit Delay Screen"
+        android:fontFamily="@font/ibm_plex_mono_medium"
+        android:textSize="30sp"/>
+   <com.google.android.material.card.MaterialCardView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="60dp"
+       android:backgroundTint="@color/foreground">
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:padding="10dp"
+           android:orientation="vertical">
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="Add Tasks"
+               android:textSize="20sp"
+               android:gravity="start"
+               android:fontFamily="@font/ibm_plex_mono_medium"
+               />
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal">
+               <EditText
+                   android:layout_width="0dp"
+                   android:layout_height="wrap_content"
+                   android:layout_weight="1"
+                   android:hint="Enter Task"/>
+
+               <Button
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:backgroundTint="#1D1630"
+                   style="@style/Widget.MaterialComponents.Button.TextButton"
+                   android:text="Add"/>
+
+           </LinearLayout>
+
+           <ScrollView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+              <LinearLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical">
+                  <CheckBox
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="Submit Assignment"/>
+
+                  <CheckBox
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="Complete Manual"/>
+
+                  <CheckBox
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="Review Notes"/>
+              </LinearLayout>
+           </ScrollView>
+       </LinearLayout>
+   </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_marginTop="70dp"
+        android:backgroundTint="@color/foreground"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Add Custom Message"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="4"
+                android:gravity="top"
+                android:hint="Enter Custom Message"
+                android:inputType="textMultiLine"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add"
+                android:backgroundTint="#1D1630"
+
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.android.mindful.appinfo.AppStats;
+import com.android.mindful.model.AppStats;
 import com.android.mindful.R;
 import com.android.mindful.activity.ConfigureAppsActivity;
 import com.android.mindful.managers.ManageAppStats;

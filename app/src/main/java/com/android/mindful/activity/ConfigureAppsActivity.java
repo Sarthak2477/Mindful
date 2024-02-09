@@ -15,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.mindful.appinfo.AppInfo;
+import com.android.mindful.model.AppInfo;
 import com.android.mindful.R;
 import com.android.mindful.adapters.CustomAdapter;
 import com.android.mindful.managers.ManageConfiguredApps;

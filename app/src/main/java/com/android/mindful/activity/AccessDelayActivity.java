@@ -1,9 +1,12 @@
 package com.android.mindful.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -17,8 +20,15 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.android.mindful.R;
+import com.android.mindful.adapters.TasksAdapter;
+import com.android.mindful.model.Task;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 public class AccessDelayActivity extends AppCompatActivity {
@@ -37,9 +47,17 @@ public class AccessDelayActivity extends AppCompatActivity {
 
         delayProgressBar = findViewById(R.id.delay_progress_bar);
 
+        List<Task> taskList = getList(this, "task_list");
+        Log.d(TAG, "Task List: " + taskList);
+        RecyclerView recyclerView = findViewById(R.id.delay_screen_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        TasksAdapter adapter = new TasksAdapter(taskList);
+        recyclerView.setAdapter(adapter);
+
         String packageName = getIntent().getStringExtra("app_package");
 
         UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+
 
         // Get the current time in milliseconds
         Calendar calendar = Calendar.getInstance();
@@ -77,6 +95,8 @@ public class AccessDelayActivity extends AppCompatActivity {
             }
         }.start();
 
+
+
         continueBtn = findViewById(R.id.continue_btn);
         continueBtn.setOnClickListener(v -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -105,7 +125,6 @@ public class AccessDelayActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
 
 
     }
@@ -137,4 +156,18 @@ public class AccessDelayActivity extends AppCompatActivity {
     public void onBackPressed() {
         // Override the back button press to do nothing (disable going back)
     }
+    public static List<Task> getList(Context context, String key) {
+        SharedPreferences prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = prefs.getString(key, null);
+
+        if (json != null) {
+            Type type = new TypeToken<List<Task>>(){}.getType();
+            List<Task> taskList = gson.fromJson(json, type);
+            return taskList;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
 }

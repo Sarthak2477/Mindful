@@ -19,6 +19,7 @@ import com.android.mindful.model.AppInfo;
 import com.android.mindful.R;
 import com.android.mindful.adapters.CustomAdapter;
 import com.android.mindful.managers.ManageConfiguredApps;
+import com.android.mindful.utils.SharedPrefUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,11 +49,9 @@ public class ConfigureAppsActivity extends AppCompatActivity {
 
         btnDone = findViewById(R.id.btnDone);
         btnDone.setOnClickListener(v -> {
-            SharedPreferences preferences = getSharedPreferences("AppPrefs",MODE_PRIVATE);
-            Set<String> appList = preferences.getStringSet("configuredApps", new HashSet<>());
-
-            SharedPreferences.Editor editor = preferences.edit();
-            ManageConfiguredApps.commitAppList(editor, appList);
+            SharedPrefUtils prefUtils =  new SharedPrefUtils(this);
+            Set<String> appList = prefUtils.getConfiguredApps();
+            ManageConfiguredApps.commitAppList(this, appList);
             Log.d("Configured Apps ", appList.toString());
             finish();
         });
@@ -76,7 +75,7 @@ public class ConfigureAppsActivity extends AppCompatActivity {
             // Hide the ProgressBar on the main thread once the task is complete
             runOnUiThread(() -> {
                 progressBar.setVisibility(View.GONE);
-                adapter = new CustomAdapter(appInfoList, getSharedPreferences("AppPrefs",MODE_PRIVATE));
+                adapter = new CustomAdapter(appInfoList, getBaseContext());
                 recyclerView.setAdapter(adapter);
 
             });

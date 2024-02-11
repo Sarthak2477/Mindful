@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.android.mindful.activity.AccessDelayActivity;
+import com.android.mindful.utils.SharedPrefUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -24,29 +25,22 @@ import java.util.TreeMap;
 public class AppAccessibilityService extends android.accessibilityservice.AccessibilityService {
     private static final String TAG = "Accessibilty service";
     private static final String PREFS_NAME = "AppPrefs";
-
-    private static final String KEY_LAST_APP_PACKAGE = "lastAppPackage";
-
-    private SharedPreferences preferences;
-
-
-
+    private SharedPrefUtils prefUtils;
     private final Handler handler = new Handler();
-
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (preferences == null) {
-            preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        if (prefUtils == null) {
+            prefUtils = new SharedPrefUtils(this);
         }
 
 
 
-        long currentTime = System.currentTimeMillis();
+
         UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
 
         UsageEvents usageEvents = usageStatsManager.queryEvents(
-                preferences.getLong("lastAppCheckTime", currentTime - 1000), currentTime);
+               prefUtils.getLastAppCheckTime(), System.currentTimeMillis());
 
         while (usageEvents.hasNextEvent()) {
             UsageEvents.Event usageEvent = new UsageEvents.Event();
@@ -58,28 +52,27 @@ public class AppAccessibilityService extends android.accessibilityservice.Access
                 Log.d(TAG, "Usage Event - Package Name: " + packageName);
                 Log.d(TAG, "Usage Event - Package Name: " + usageEvent.getEventType());
 
-                Log.d(TAG, "Last App Package: " + getLastAppPackage());
-                Set<String> configuredApps = preferences.getStringSet("configuredApps",new HashSet<>());
+                Log.d(TAG, "Last App Package: " + prefUtils.getLastAppPackage());
+                Set<String> configuredApps = prefUtils.getConfiguredApps();
                 Log.d(TAG, configuredApps.toString());
                 Log.d(TAG, String.valueOf(event.getEventType()));
 
-                if(configuredApps.contains(packageName) && !configuredApps.contains(getLastAppPackage()) && !getLastAppPackage().equals("com.android.mindful")){
-                    Log.d(TAG, "Last App Package Before Delay: " + getLastAppPackage());
-                    long delayClosedAt = preferences.getLong("Delay_Activity_Closed_At", 0);
-                    long timeDifference = System.currentTimeMillis() - delayClosedAt;
-                    if(timeDifference >= 2000){
+                if(configuredApps.contains(packageName) && !configuredApps.contains(prefUtils.getLastAppPackage()) && !prefUtils.getLastAppPackage().equals("com.android.mindful")){
+                    Log.d(TAG, "Last App Package Before Delay: " + prefUtils.getLastAppPackage());
+//                    long delayClosedAt = preferences.getLong("Delay_Activity_Closed_At", 0);
+//                    long timeDifference = System.currentTimeMillis() - delayClosedAt;
+//                    if(timeDifference >= 2000){
                         handler.postDelayed(() -> {
                             Intent intent = new Intent(AppAccessibilityService.this, AccessDelayActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("app_package", packageName);
                             startActivity(intent);
                         }, 50);
-                    }
+//                    }
 
                 }
-                setLastAppPackage(packageName);
-
-                preferences.edit().putLong("lastAppCheckTime", currentTime).apply();
+                prefUtils.setLastAppPackage(packageName);
+                prefUtils.setLastAppCheckTime(System.currentTimeMillis());
             }
         }
 
@@ -115,15 +108,7 @@ public class AppAccessibilityService extends android.accessibilityservice.Access
 
     }
 
-    private void setLastAppPackage(String packageName) {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(KEY_LAST_APP_PACKAGE, packageName);
-        editor.apply();
-    }
 
-    private String getLastAppPackage() {
-        return preferences.getString(KEY_LAST_APP_PACKAGE, null);
-    }
 
 
     public String getForegroundApp() {

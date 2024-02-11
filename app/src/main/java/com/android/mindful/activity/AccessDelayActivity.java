@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import com.android.mindful.R;
 import com.android.mindful.adapters.TasksAdapter;
 import com.android.mindful.model.Task;
+import com.android.mindful.utils.SharedPrefUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -38,6 +39,7 @@ public class AccessDelayActivity extends AppCompatActivity {
 
     public String TAG = "Access Delay Activity";
 
+
     private Button continueBtn, closeBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +49,11 @@ public class AccessDelayActivity extends AppCompatActivity {
 
         delayProgressBar = findViewById(R.id.delay_progress_bar);
 
-        List<Task> taskList = getList(this, "task_list");
+        List<Task> taskList = new SharedPrefUtils(this).getTaskList();
         Log.d(TAG, "Task List: " + taskList);
         RecyclerView recyclerView = findViewById(R.id.delay_screen_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        TasksAdapter adapter = new TasksAdapter(taskList);
+        TasksAdapter adapter = new TasksAdapter(this,taskList);
         recyclerView.setAdapter(adapter);
 
         String packageName = getIntent().getStringExtra("app_package");
@@ -137,15 +139,14 @@ public class AccessDelayActivity extends AppCompatActivity {
         editor.putLong("Delay_Activity_Closed_At", System.currentTimeMillis());
     }
     public static long calculateDelayTime(int usageTime) {
-        long usageTimeMs = usageTime * 1000;  // Convert usage time to milliseconds
         long delayTime;
 
-        if (usageTimeMs < 600000) {  // Less than 10 minutes
-            delayTime = 10000 + (long) (5000 * (usageTimeMs / 600000));  // Linear interpolation between 10s to 15s
-        } else if (usageTimeMs < 3600000) {  // Less than 1 hour
+        if (usageTime < 600000) {  // Less than 10 minutes
+            delayTime = 10000 + (long) (5000 * (usageTime / 600000));  // Linear interpolation between 10s to 15s
+        } else if (usageTime < 3600000) {  // Less than 1 hour
             delayTime = 30000;  // 30s constant delay
-        } else if (usageTimeMs < 21600000) {  // Less than 6 hours
-            delayTime = 30000 + (long) (15000 * ((usageTimeMs - 3600000) / 18000000));  // Linear interpolation between 30s to 45s
+        } else if (usageTime < 21600000) {  // Less than 6 hours
+            delayTime = 30000 + (long) (15000 * ((usageTime - 3600000) / 18000000));  // Linear interpolation between 30s to 45s
         } else {
             delayTime = 60000;  // 60s constant delay
         }
@@ -156,18 +157,6 @@ public class AccessDelayActivity extends AppCompatActivity {
     public void onBackPressed() {
         // Override the back button press to do nothing (disable going back)
     }
-    public static List<Task> getList(Context context, String key) {
-        SharedPreferences prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = prefs.getString(key, null);
 
-        if (json != null) {
-            Type type = new TypeToken<List<Task>>(){}.getType();
-            List<Task> taskList = gson.fromJson(json, type);
-            return taskList;
-        } else {
-            return new ArrayList<>();
-        }
-    }
 
 }

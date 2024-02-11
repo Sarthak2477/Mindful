@@ -5,9 +5,12 @@ import static android.content.Context.USAGE_STATS_SERVICE;
 import android.app.Activity;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+
+import com.android.mindful.utils.SharedPrefUtils;
 
 import java.util.Calendar;
 import java.util.HashSet;
@@ -28,12 +31,12 @@ public class ManageConfiguredApps {
 
     }
 
-    public static void commitAppList(SharedPreferences.Editor editor, Set<String> prevList){
+    public static void commitAppList(Context context, Set<String> prevList){
         System.out.println("Set: " + configuredApps);
         Set<String> combinedList = new HashSet<>(prevList);
         combinedList.addAll(configuredApps);
-        editor.putStringSet("configuredApps", combinedList);
-        editor.apply();
+        new SharedPrefUtils(context).setConfiguredApps(combinedList);
+
     }
 
     public static String getAppNameFromPackageInfo(PackageManager packageManager, ApplicationInfo appInfo) {

@@ -1,34 +1,30 @@
 package com.android.mindful.fragment;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.mindful.R;
-import com.android.mindful.adapters.TaskViewHolder;
 import com.android.mindful.adapters.TasksAdapter;
 import com.android.mindful.model.Task;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.android.mindful.utils.SharedPrefUtils;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class EditFragment extends Fragment {
 
 
-    private final String TASK_LIST_KEY = "task_list";
     public EditFragment() {
         // Required empty public constructor
     }
@@ -50,18 +46,27 @@ public class EditFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_edit, container, false);
         Button addTask = view.findViewById(R.id.btn_add_task);
         EditText editText = view.findViewById(R.id.text_task);
-        RecyclerView recyclerView = view.findViewById(R.id.task_recycler_view);
+        TextView noTaskMsg = view.findViewById(R.id.no_task_msg);
 
-        List<Task> taskList = getList(getActivity(), TASK_LIST_KEY);
+        RecyclerView recyclerView = view.findViewById(R.id.task_recycler_view);
+        SharedPrefUtils prefUtils = new SharedPrefUtils(getActivity());
+
+        List<Task> taskList = prefUtils.getTaskList();
+
+        if(taskList.isEmpty()){
+            noTaskMsg.setVisibility(View.VISIBLE);
+        }
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        TasksAdapter adapter = new TasksAdapter(taskList);
+        TasksAdapter adapter = new TasksAdapter(getActivity(), taskList);
         recyclerView.setAdapter(adapter);
 
 
         addTask.setOnClickListener(v -> {
            if(taskList != null){
+               noTaskMsg.setVisibility(View.GONE);
                taskList.add(new Task(editText.getText().toString(), false, System.currentTimeMillis()));
-               saveList(getActivity(), TASK_LIST_KEY, taskList);
+               prefUtils.saveTaskList(taskList);
                adapter.taskList = taskList;
                adapter.notifyDataSetChanged();
                editText.setText("");
@@ -72,31 +77,6 @@ public class EditFragment extends Fragment {
         return  view;
     }
 
-    // Convert a list to a JSON string
-    public static void saveList(Context context, String key, List<Task> list) {
-        SharedPreferences prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-        editor.putString(key, json);
-        editor.apply();
-    }
-
-
-    // Retrieve a list from a JSON string
-    public static List<Task> getList(Context context, String key) {
-        SharedPreferences prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = prefs.getString(key, null);
-
-        if (json != null) {
-            Type type = new TypeToken<List<Task>>(){}.getType();
-            List<Task> taskList = gson.fromJson(json, type);
-            return taskList;
-        } else {
-            return new ArrayList<>();
-        }
-    }
 
 
 }

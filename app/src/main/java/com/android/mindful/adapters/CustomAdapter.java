@@ -1,5 +1,6 @@
 package com.android.mindful.adapters;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.mindful.model.AppInfo;
 import com.android.mindful.R;
 import com.android.mindful.managers.ManageConfiguredApps;
+import com.android.mindful.utils.SharedPrefUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,10 +22,11 @@ import java.util.Set;
 public class CustomAdapter extends RecyclerView.Adapter<AppViewHolder>{
 
     private List<AppInfo> appInfoList;
-    private SharedPreferences preferences;
-    public CustomAdapter(List<AppInfo> appInfoList, SharedPreferences preferences) {
+
+    Context context;
+    public CustomAdapter(List<AppInfo> appInfoList, Context context) {
         this.appInfoList = appInfoList;
-        this.preferences = preferences;
+        this.context = context;
     }
 
     @NonNull
@@ -44,7 +47,7 @@ public class CustomAdapter extends RecyclerView.Adapter<AppViewHolder>{
         holder.appName.setText(appName);
         holder.stat.setText(appStat);
 
-        Set<String> configuredApps = preferences.getStringSet("configuredApps", new HashSet<>());
+        Set<String> configuredApps = new SharedPrefUtils(context).getConfiguredApps();
         System.out.println("Customer Adapter list: " + configuredApps);
 
         boolean isConfigured = configuredApps.contains(packageName);

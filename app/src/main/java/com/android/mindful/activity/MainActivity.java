@@ -18,6 +18,7 @@ import com.android.mindful.R;
 import com.android.mindful.fragment.SettingsFragment;
 import com.android.mindful.fragment.StatsFragment;
 import com.android.mindful.managers.ManagePermissions;
+import com.android.mindful.utils.SharedPrefUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -39,21 +40,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
-        Log.d(TAG, "First Launch: " + preferences.getBoolean("first_launch", true));
-        if(preferences.getBoolean("first_launch", true)){
+        SharedPrefUtils prefUtils = new SharedPrefUtils(this);
+
+        if(prefUtils.isFirstLaunch()){
 //            Launch Setup Activity
             Log.d(TAG,"Launch Setup Activity");
 
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("first_launch", false);
-            editor.apply();
-            editor.commit();
-            Log.d(TAG, "First Launch: " + preferences.getBoolean("first_launch", true));
-
+            prefUtils.setFirstLaunch(false);
             startActivity(new Intent(MainActivity.this, SetupActivity.class));
         }else{
-            if(!ManagePermissions.isUsagePermissionGranted(MainActivity.this) || !ManagePermissions.isAccessibilityServiceEnabled(MainActivity.this, AppAccessibilityService.class) && !preferences.getBoolean("first_launch", false)){
+            if(!ManagePermissions.isUsagePermissionGranted(MainActivity.this) || !ManagePermissions.isAccessibilityServiceEnabled(MainActivity.this, AppAccessibilityService.class) && !prefUtils.isFirstLaunch()){
                 Intent intent = new Intent(MainActivity.this, SetupActivity.class);
                 intent.putExtra("for_permissions", true);
                 startActivity(intent);

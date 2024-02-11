@@ -1,16 +1,17 @@
 package com.android.mindful.adapters;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.mindful.R;
 import com.android.mindful.model.Task;
+import com.android.mindful.utils.SharedPrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,10 @@ import java.util.List;
 public class TasksAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
     public List<Task> taskList = new ArrayList<>();
-
-    public TasksAdapter(List<Task> taskList) {
+    public Context context;
+    public TasksAdapter(Context context, List<Task> taskList) {
         this.taskList = taskList;
+        this.context = context;
     }
 
     @NonNull
@@ -48,9 +50,15 @@ public class TasksAdapter extends RecyclerView.Adapter<TaskViewHolder> {
             }
         });
         holder.btnDelete.setOnClickListener(v -> {
-            if(!taskList.isEmpty()){
-                taskList.remove(position);
-                notifyItemRemoved(position);
+            try{
+                if(!taskList.isEmpty()){
+                    taskList.remove(position);
+                    new SharedPrefUtils(context).saveTaskList(taskList);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, getItemCount());
+                }
+            }catch (IndexOutOfBoundsException e){
+                System.out.println(e.getMessage());
             }
         });
 

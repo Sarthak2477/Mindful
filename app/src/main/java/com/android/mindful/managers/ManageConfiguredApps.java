@@ -32,13 +32,16 @@ public class ManageConfiguredApps {
     }
 
     public static void commitAppList(Context context, Set<String> prevList){
-        System.out.println("Set: " + configuredApps);
         Set<String> combinedList = new HashSet<>(prevList);
         combinedList.addAll(configuredApps);
         new SharedPrefUtils(context).setConfiguredApps(combinedList);
 
     }
 
+    public static Set<String> getTempConfiguredAppsList(Context context){
+        configuredApps = new SharedPrefUtils(context).getConfiguredApps();
+        return configuredApps;
+    }
     public static String getAppNameFromPackageInfo(PackageManager packageManager, ApplicationInfo appInfo) {
         CharSequence appName = packageManager.getApplicationLabel(appInfo);
         return appName.toString();

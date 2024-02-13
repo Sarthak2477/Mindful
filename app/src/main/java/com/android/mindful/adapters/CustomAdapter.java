@@ -47,7 +47,7 @@ public class CustomAdapter extends RecyclerView.Adapter<AppViewHolder>{
         holder.appName.setText(appName);
         holder.stat.setText(appStat);
 
-        Set<String> configuredApps = new SharedPrefUtils(context).getConfiguredApps();
+        Set<String> configuredApps = ManageConfiguredApps.getTempConfiguredAppsList(context);
         System.out.println("Customer Adapter list: " + configuredApps);
 
         boolean isConfigured = configuredApps.contains(packageName);

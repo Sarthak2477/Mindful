@@ -3,32 +3,21 @@ package com.android.mindful.managers;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
+import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ManageAppStats {
 
-    public static List<Long> dailyUsageList = new ArrayList<>();
 
-    public static long getDailyAverage(){
-        long sum = 0;
-
-        if(dailyUsageList == null){
-            return 0;
-        }
-        if(dailyUsageList.isEmpty()){
-            return 0;
-        }
-        for(long usage : dailyUsageList){
-            sum += usage;
-        }
-
-        return (long) sum/dailyUsageList.size();
-    }
-
+    public static final String TAG = "ManageAppStats";
     public static List<Long> getDailyAppUsageInLastSevenDays(Context context, String packageName) {
+        List<Long> dailyUsageList = new ArrayList<>();
+
         UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -7);
@@ -42,11 +31,12 @@ public class ManageAppStats {
             for (UsageStats stats : appUsageStatsList) {
                 if (stats.getPackageName().equals(packageName)) {
                     if (stats.getLastTimeUsed() >= startMillis && stats.getLastTimeUsed() < endMillis) {
-                        usageTime += stats.getTotalTimeInForeground();
+                        usageTime = stats.getTotalTimeInForeground();
+                        dailyUsageList.add(usageTime/60000);
+
                     }
                 }
             }
-            dailyUsageList.add(usageTime);
             endMillis = startMillis;
             calendar.add(Calendar.DAY_OF_YEAR, -1);
             startMillis = calendar.getTimeInMillis();
@@ -57,9 +47,16 @@ public class ManageAppStats {
     public static double getUsagePercentageChangeLastWeek(Context context, String packageName) {
         UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         Calendar calendar = Calendar.getInstance();
+
         long endTime = calendar.getTimeInMillis();
+
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         calendar.add(Calendar.WEEK_OF_YEAR, -1);
         long startTime = calendar.getTimeInMillis();
+
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        long lastWeekEnd = calendar.getTimeInMillis();
+
 
         List<UsageStats> statsList = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime);
 
@@ -69,28 +66,39 @@ public class ManageAppStats {
         for (UsageStats stats : statsList) {
             if (stats.getPackageName().equals(packageName)) {
                 totalUsageTime += stats.getTotalTimeInForeground();
-                if (stats.getLastTimeUsed() >= startTime) {
+                if (stats.getLastTimeUsed() >= startTime && stats.getLastTimeUsed() <= lastWeekEnd) {
                     lastWeekUsageTime += stats.getTotalTimeInForeground();
                 }
             }
         }
 
         if (lastWeekUsageTime == 0) {
-            return 0.0; // To avoid division by zero if app was not used last week
+            return 0.0; // To avoid division by zero if the app was not used last week
         }
+        Log.d(TAG, "total usage: "+totalUsageTime);
+        Log.d(TAG, "last week: "+lastWeekUsageTime);
+        long thisWeekUsageTime = totalUsageTime - lastWeekUsageTime;
+        Log.d(TAG, "This Week" + thisWeekUsageTime);
 
-        double usagePercentageChange = ((double) (totalUsageTime - lastWeekUsageTime) / lastWeekUsageTime) * 100;
-        return usagePercentageChange;
+        double usagePercentageChange = ((double) (thisWeekUsageTime - lastWeekUsageTime) / lastWeekUsageTime) * 100;
+        Log.d(TAG, "usage percentage: " + usagePercentageChange);
+        return Math.round(usagePercentageChange * 100.0) / 100.0;
     }
+
 
     public static long getTotalScreenTimeForAppThisWeek(Context context, String packageName) {
         long totalScreenTime = 0;
         UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         long startOfWeek = calendar.getTimeInMillis();
         long endOfDay = System.currentTimeMillis();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Log.d(TAG,"Start of Week: " + sdf.format(new Date(startOfWeek)));
+        Log.d(TAG,"End of Week: " + sdf.format(new Date(endOfDay)));
+
 
         List<UsageStats> stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startOfWeek, endOfDay);
 
@@ -99,8 +107,10 @@ public class ManageAppStats {
                 totalScreenTime += usageStats.getTotalTimeInForeground();
             }
         }
+        Log.d(TAG,"Total Screen Time: " + totalScreenTime);
 
         return totalScreenTime;
+
     }
 
 

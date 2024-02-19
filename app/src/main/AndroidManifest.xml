@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<!--    <uses-permission android:name="android.permission.REORDER_TASKS" />-->
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -17,22 +20,28 @@
         android:roundIcon="@mipmap/app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Mindful"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+        <service
+            android:name=".service.AppForegroundService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
         <activity
             android:name=".activity.ConfigureAppsActivity"
             android:exported="false" />
         <activity
             android:name=".activity.AccessDelayActivity"
+            android:exported="false"
             android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:exported="false" />
+            android:taskAffinity="" />
         <activity
             android:name=".activity.SetupActivity"
             android:exported="false" />
         <activity
             android:name=".activity.MainActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,21 +53,19 @@
             android:name=".service.AppAccessibilityService"
             android:exported="true"
             android:label="Mindful"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
 
             <meta-data
-                android:name="android.accessibilityservice"
+                android:name="android.accessibility-service"
                 android:resource="@xml/accessibility_service_config" />
         </service>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
     </application>
-
-
 
 </manifest>

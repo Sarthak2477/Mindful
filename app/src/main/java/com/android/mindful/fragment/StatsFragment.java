@@ -9,18 +9,23 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.android.mindful.adapters.StatAppAdapter;
 import com.android.mindful.model.AppStats;
 import com.android.mindful.R;
 import com.android.mindful.activity.ConfigureAppsActivity;
 import com.android.mindful.managers.ManageAppStats;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -49,42 +54,72 @@ import java.util.Set;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stats, container, false);
-        Button configureApps_btn = view.findViewById(R.id.configure_apps);
+        FloatingActionButton configureApps_btn = view.findViewById(R.id.configure_apps);
 
         configureApps_btn.setOnClickListener(v -> {
             startActivity(new Intent(getActivity(), ConfigureAppsActivity.class));
         });
 
 
-//        RecyclerView recyclerView = view.findViewById(R.id.stat_recycler_view);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        try {
-//            recyclerView.setAdapter(new StatAppAdapter(prepareAppStatList()));
-//        } catch (PackageManager.NameNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
+        RecyclerView recyclerView = view.findViewById(R.id.stat_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(new StatAppAdapter(prepareAppStatList()));
 
         return view;
 
     }
 
-    public List<AppStats> prepareAppStatList() throws PackageManager.NameNotFoundException {
+    public List<AppStats> prepareAppStatList(){
         List<AppStats> appStatsList = new ArrayList<>();
         SharedPreferences preferences = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         Set<String> configuredApps = preferences.getStringSet("configuredApps",new HashSet<>());
         ApplicationInfo applicationInfo;
         for(String app : configuredApps){
-            PackageManager packageManager = getActivity().getPackageManager();
-            Drawable appIcon = packageManager.getApplicationIcon(app);
-            applicationInfo = packageManager.getApplicationInfo(app, 0);
-            String appName = (String) packageManager.getApplicationLabel(applicationInfo);
-            List<BarEntry> barEntryList = new ArrayList<>();
+            try{
+                PackageManager packageManager = getActivity().getPackageManager();
+                Drawable appIcon = packageManager.getApplicationIcon(app);
+                applicationInfo = packageManager.getApplicationInfo(app, 0);
+                String appName = (String) packageManager.getApplicationLabel(applicationInfo);
+                List<BarEntry> barEntryList = new ArrayList<>();
 
-            BarDataSet barDataSet = new BarDataSet(barEntryList, "Usage");
-            String dailyAvg = convertMillisecondsToString(ManageAppStats.getDailyAverage());
-            String compareLastWeek = ManageAppStats.getUsagePercentageChangeLastWeek(getActivity(), app) + "%";
-            String weekStat = convertMillisecondsToString(ManageAppStats.getTotalScreenTimeForAppThisWeek(getActivity(), app));
-            appStatsList.add(new AppStats(appIcon, appName, barDataSet, dailyAvg,weekStat, compareLastWeek));
+                List <Long> dailyUsageList = ManageAppStats.getDailyAppUsageInLastSevenDays(getActivity(), applicationInfo.packageName);
+                Log.d("Stats Fragment","List Size: " + dailyUsageList.size() );
+                int i = 0;
+                for(Long dayUsage: dailyUsageList){
+                    barEntryList.add(new BarEntry((float) i, (float) dayUsage));
+                    i++;
+                }
+
+                BarDataSet barDataSet = new BarDataSet(barEntryList, "Usage");
+
+                long sum = 0;
+                for(long usage : dailyUsageList){
+                    sum += usage;
+                }
+                long avg = sum /dailyUsageList.size();
+                Log.d("StatsFragment", "Average: " + avg);
+                String dailyAvg = "00m";
+                if (avg < 60) {
+                     dailyAvg = String.format("%dm", avg);
+                } else {
+                    long hours = avg / 60;
+                    long remainingMinutes = avg % 60;
+                    dailyAvg =  String.format("%dh %02dm", hours, remainingMinutes);
+                }
+
+                double percentageChange = ManageAppStats.getUsagePercentageChangeLastWeek(getActivity(), app);
+                String compareLastWeek = "0%";
+                if(percentageChange > 0){
+                    compareLastWeek = "+" + percentageChange+ "%";
+                } else {
+                    compareLastWeek =  percentageChange+ "%";
+                }
+
+                String weekStat = convertMillisecondsToString(ManageAppStats.getTotalScreenTimeForAppThisWeek(getActivity(), app));
+                appStatsList.add(new AppStats(appIcon, appName, barDataSet, dailyAvg,weekStat, compareLastWeek));
+            }catch (PackageManager.NameNotFoundException e){
+                Log.d("Stats", "Package Not Found: " + app);
+            }
         }
 
         return  appStatsList;

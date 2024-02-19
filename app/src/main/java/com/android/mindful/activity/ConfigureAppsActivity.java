@@ -53,7 +53,7 @@ public class ConfigureAppsActivity extends AppCompatActivity {
             Set<String> appList = prefUtils.getConfiguredApps();
             ManageConfiguredApps.commitAppList(this, appList);
             Log.d("Configured Apps ", appList.toString());
-            finish();
+            startActivity(new Intent(ConfigureAppsActivity.this, MainActivity.class));    
         });
         progressBar = findViewById(R.id.progressBar);
 

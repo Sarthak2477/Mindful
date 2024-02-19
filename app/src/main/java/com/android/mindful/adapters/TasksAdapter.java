@@ -18,7 +18,7 @@ import java.util.List;
 
 public class TasksAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
-    public List<Task> taskList = new ArrayList<>();
+    public List<Task> taskList;
     public Context context;
     public TasksAdapter(Context context, List<Task> taskList) {
         this.taskList = taskList;
@@ -37,16 +37,24 @@ public class TasksAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
 //        long createdAt = taskList.get(position).getCreatedAt();
-
+        SharedPrefUtils prefUtils = new SharedPrefUtils(context);
         holder.itemText.setText(taskList.get(position).getTaskText());
         holder.checkTask.setChecked(taskList.get(position).isCompleted());
+        if (holder.checkTask.isChecked()) {
+            holder.itemText.setPaintFlags(holder.itemText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            holder.itemText.setPaintFlags(holder.itemText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        }
         holder.checkTask.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 taskList.get(position).setCompleted(true);
                 holder.itemText.setPaintFlags(holder.itemText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                prefUtils.saveTaskList(taskList);
             } else {
                 taskList.get(position).setCompleted(false);
                 holder.itemText.setPaintFlags(holder.itemText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                prefUtils.saveTaskList(taskList);
+
             }
         });
         holder.btnDelete.setOnClickListener(v -> {

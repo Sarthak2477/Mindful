@@ -52,7 +52,7 @@ public class SharedPrefUtils {
 
     public long getLastAppCheckTime(){
         long currentTime = System.currentTimeMillis();
-        return  preferences.getLong("lastAppCheckTime", System.currentTimeMillis()-10000);
+        return  preferences.getLong("lastAppCheckTime", System.currentTimeMillis()-1000);
     }
 
     public void setLastAppCheckTime(long time){

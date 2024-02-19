@@ -42,14 +42,17 @@ public class EditFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        SharedPrefUtils prefUtils = new SharedPrefUtils(getActivity());
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit, container, false);
         Button addTask = view.findViewById(R.id.btn_add_task);
         EditText editText = view.findViewById(R.id.text_task);
         TextView noTaskMsg = view.findViewById(R.id.no_task_msg);
+        EditText customMessage = view.findViewById(R.id.custom_message);
+        Button addCustomMessage = view.findViewById(R.id.add_custom_msb);
 
         RecyclerView recyclerView = view.findViewById(R.id.task_recycler_view);
-        SharedPrefUtils prefUtils = new SharedPrefUtils(getActivity());
 
         List<Task> taskList = prefUtils.getTaskList();
 
@@ -73,6 +76,13 @@ public class EditFragment extends Fragment {
 
            }
 
+        });
+
+        addCustomMessage.setOnClickListener(v->{
+            String strCustomMessage = customMessage.getText().toString();
+            if(!strCustomMessage.trim().isEmpty()) prefUtils.setCustomMessage(strCustomMessage);
+            customMessage.setText("");
+            customMessage.clearFocus();
         });
         return  view;
     }

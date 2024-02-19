@@ -1,5 +1,7 @@
 package com.android.mindful.adapters;
 
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -9,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.NumberPicker;
+import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,8 +41,10 @@ import java.util.Locale;
 public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
     List<AppStats> appStatsList;
 
-    public StatAppAdapter(List<AppStats> appStatsList) {
+    Context context;
+    public StatAppAdapter( Context context,List<AppStats> appStatsList) {
         this.appStatsList = appStatsList;
+        this.context = context;
     }
 
     @NonNull
@@ -72,6 +78,17 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
         holder.barChart.getBarData().setBarWidth(0.9f);
         holder.barChart.getBarData().setValueTextColors(Collections.singletonList(Color.WHITE));
 
+        holder.setTime.setOnClickListener(v->{
+            Dialog timerDialog = new Dialog(context);
+            timerDialog.setContentView(R.layout.timer_dialog);
+
+            NumberPicker hoursPicker = timerDialog.findViewById(R.id.hoursPicker);
+            hoursPicker.setMaxValue(23);
+            NumberPicker minutesPicker = timerDialog.findViewById(R.id.minutesPicker);
+            minutesPicker.setMaxValue(59);
+            timerDialog.setCancelable(false);
+            timerDialog.show();
+        });
 
         // Update bar chart if needed
     }

@@ -92,5 +92,16 @@ public class SharedPrefUtils {
         }
     }
 
+    public String getCustomMessage(){
+        return preferences.getString("custom_message", "Time flies. Treasure your hours.");
+    }
+
+    public void setCustomMessage(String message){
+        editor.putString("custom_message", message);
+        editor.apply();
+
+    }
+
+
 
 }

@@ -1,5 +1,6 @@
    package com.android.mindful.fragment;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TimePicker;
 
 import com.android.mindful.adapters.StatAppAdapter;
 import com.android.mindful.model.AppStats;
@@ -56,14 +58,11 @@ import java.util.Set;
         View view = inflater.inflate(R.layout.fragment_stats, container, false);
         FloatingActionButton configureApps_btn = view.findViewById(R.id.configure_apps);
 
-        configureApps_btn.setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), ConfigureAppsActivity.class));
-        });
 
 
         RecyclerView recyclerView = view.findViewById(R.id.stat_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(new StatAppAdapter(prepareAppStatList()));
+        recyclerView.setAdapter(new StatAppAdapter(getActivity(),prepareAppStatList()));
 
         return view;
 

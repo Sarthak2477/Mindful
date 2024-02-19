@@ -1,6 +1,7 @@
 package com.android.mindful.adapters;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +16,8 @@ public class StatAppViewHolder extends RecyclerView.ViewHolder {
     TextView appName, dailyAvg, weekStat, comparedLastWeek;
     BarChart barChart;
 
+    Button setTime;
+
 
     public StatAppViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -24,6 +27,7 @@ public class StatAppViewHolder extends RecyclerView.ViewHolder {
         weekStat = itemView.findViewById(R.id.week_stat);
         comparedLastWeek = itemView.findViewById(R.id.cmprd_last_week);
         barChart = itemView.findViewById(R.id.barChart);
+        setTime = itemView.findViewById(R.id.btn_set_app_time);
 
     }
 }

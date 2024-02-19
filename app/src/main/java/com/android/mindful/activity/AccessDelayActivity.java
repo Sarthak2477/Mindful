@@ -32,13 +32,15 @@ import java.util.Map;
 public class AccessDelayActivity extends AppCompatActivity {
 
     private ProgressBar delayProgressBar, taskProgress;
-    public SharedPreferences preferences;
+    SharedPrefUtils prefUtils;
 
     public String TAG = "Access Delay Activity";
 
-    private TextView textTaskProgress;
+    private TextView textTaskProgress, textCustomMessage;
 
-    private Button continueBtn;
+    public RecyclerView recyclerView;
+
+    private Button continueBtn, addTask;
 
     public String packageName;
 
@@ -48,18 +50,21 @@ public class AccessDelayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_access_delay);
 //      Move activity to front on top of current app
         moveToFront();
+        prefUtils = new SharedPrefUtils(this);
+
         packageName = getIntent().getStringExtra("app_package");
-
-        preferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-
         delayProgressBar = findViewById(R.id.delay_progress_bar);
-
         taskProgress = findViewById(R.id.task_progress);
-
         textTaskProgress = findViewById(R.id.text_task_progress);
+        recyclerView = findViewById(R.id.delay_screen_recycler_view);
+        addTask = findViewById(R.id.delay_screen_add_task);
+        textCustomMessage = findViewById(R.id.delay_screen_custom_message);
+        textCustomMessage.setText(prefUtils.getCustomMessage());
 
 //       Get task List
-        List<Task> taskList = new SharedPrefUtils(this).getTaskList();
+        List<Task> taskList = prefUtils.getTaskList();
+
+
         if(!taskList.isEmpty()){
             int completedTask = 0;
             for(Task task : taskList){
@@ -72,9 +77,17 @@ public class AccessDelayActivity extends AppCompatActivity {
 
             Log.d(TAG, "Task List: " + taskList);
 
-            RecyclerView recyclerView = findViewById(R.id.delay_screen_recycler_view);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setAdapter(new TasksAdapter(this,taskList));
+            recyclerView.setVisibility(View.VISIBLE);
+            findViewById(R.id.no_task_at_delay_screen).setVisibility(View.GONE );
+
+        }else{
+            findViewById(R.id.no_task_at_delay_screen).setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+            taskProgress.setVisibility(View.GONE);
+            textTaskProgress.setVisibility(View.GONE);
+
         }
 
 
@@ -120,11 +133,20 @@ public class AccessDelayActivity extends AppCompatActivity {
 
 
 
+        addTask.setOnClickListener(v->{
+            Intent intent = new Intent(AccessDelayActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
+
         continueBtn = findViewById(R.id.continue_btn);
         continueBtn.setOnClickListener(v -> {
+            finishAndRemoveTask();
             Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity( launchIntent );
+
         });
+
 
         Button closeBtn = findViewById(R.id.close_btn);
         closeBtn.setOnClickListener(v -> {
@@ -140,10 +162,6 @@ public class AccessDelayActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        preferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong("Delay_Activity_Closed_At", System.currentTimeMillis());
-        editor.apply();
     }
     public static long calculateDelayTime(int usageTime) {
         long delayTime;

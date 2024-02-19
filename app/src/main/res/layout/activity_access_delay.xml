@@ -15,17 +15,18 @@
         android:layout_marginBottom="90dp"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
     <TextView
+        android:id="@+id/delay_screen_custom_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="20dp"
         android:fontFamily="@font/ibm_plex_mono_medium"
         android:gravity="center"
-        android:text="Complete Your Daily Tasks First"
+        android:text="Time flies. Treasure your hours"
         android:textSize="18sp" />
 
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="313dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:backgroundTint="@color/foreground">
@@ -61,10 +62,29 @@
                     android:text="  40%"/>
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/no_task_at_delay_screen"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:text="No Tasks for today"
+                android:textStyle="italic"
+                android:visibility="gone"
+                android:gravity="center"/>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/delay_screen_recycler_view"/>
+            <Button
+                android:id="@+id/delay_screen_add_task"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/bg"
+                android:text="Add Tasks"
+                android:gravity="center"
+                android:fontFamily="@font/ibm_plex_mono_medium"
+                />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

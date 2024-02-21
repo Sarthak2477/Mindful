@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.app.usage.UsageEvents;
+import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -18,8 +19,12 @@ import androidx.core.app.NotificationCompat;
 
 import com.android.mindful.R;
 import com.android.mindful.activity.AccessDelayActivity;
+import com.android.mindful.activity.RestricWindow;
 import com.android.mindful.utils.SharedPrefUtils;
 
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -99,21 +104,26 @@ public class AppForegroundService extends Service {
 
 
     private void detectApp() {
-        Log.d(TAG,"Detecting Configured Apps...");
+//        Log.d(TAG,"Detecting Configured Apps...");
         long startTime = prefUtils.getLastAppCheckTime();
         long endTime = System.currentTimeMillis();
 
         UsageEvents usageEvents = usageStatsManager.queryEvents(startTime, endTime);
+
         Log.d(TAG, usageEvents.toString());
-        Log.d(TAG, "Events: " + usageEvents.hasNextEvent());
+//        Log.d(TAG, "Events: " + usageEvents.hasNextEvent());
+
         while (usageEvents.hasNextEvent()) {
             UsageEvents.Event usageEvent = new UsageEvents.Event();
             usageEvents.getNextEvent(usageEvent);
+            String packageName = usageEvent.getPackageName();
 
+//
             if (usageEvent.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED) {
-                String packageName = usageEvent.getPackageName();
 
-                Log.d(TAG, "Usage Event - Package Name: " + packageName);
+
+
+//                Log.d(TAG, "Usage Event - Package Name: " + packageName);
 
                 Set<String> configuredApps = prefUtils.getConfiguredApps();
 
@@ -121,20 +131,77 @@ public class AppForegroundService extends Service {
                         !configuredApps.contains(prefUtils.getLastAppPackage()) &&
                         !prefUtils.getLastAppPackage().equals("com.android.mindful")) {
 
-                    Log.d(TAG, "Last App Package Before Delay: " + prefUtils.getLastAppPackage());
 
-                    handler.postDelayed(() -> {
+
+                        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+                        homeIntent.addCategory(Intent.CATEGORY_HOME);
+                        homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                    if(doesAppUsageExceeds(packageName)){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            if(usageStatsManager.getAppStandbyBucket() == UsageStatsManager.STANDBY_BUCKET_ACTIVE){
+                                startActivity(homeIntent);
+                                Intent intent = new Intent(AppForegroundService.this, RestricWindow.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+                        }
+                    }else{
+                        startActivity(homeIntent);
                         Intent i = new Intent(AppForegroundService.this, AccessDelayActivity.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         i.putExtra("app_package", packageName);
                         startActivity(i);
-                    }, 50);
+                    }
                 }
 
                 prefUtils.setLastAppPackage(packageName);
                 prefUtils.setLastAppCheckTime(System.currentTimeMillis());
             }
         }
+    }
+
+    public boolean doesAppUsageExceeds(String packageName) {
+        HashMap<String, Long> appTimerList = prefUtils.getAppTimer();
+        long totalTimeUsageInMillis = 0;
+        double setTime = 0;
+        Log.d(TAG, "App timer List: " + appTimerList);
+        Log.d(TAG, "package: " + packageName);
+
+        if (appTimerList.containsKey(packageName)) {
+            setTime = appTimerList.get(packageName);
+
+            UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+
+            Calendar calendar = Calendar.getInstance();
+            long endMillis = calendar.getTimeInMillis();
+
+            // Set the time to the beginning of the day (midnight)
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            long startMillis = calendar.getTimeInMillis();
+
+            // Query usage stats for the given package
+            List<UsageStats> usageStatsList = usageStatsManager.queryUsageStats(
+                    UsageStatsManager.INTERVAL_DAILY, endMillis-1000, endMillis);
+
+            // Find the usage stats for the specific package
+            for (UsageStats usageStats : usageStatsList) {
+                if (packageName.equals(usageStats.getPackageName())) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        totalTimeUsageInMillis = usageStats.getTotalTimeVisible();
+                        Log.d(TAG, "Total usage Time: " + totalTimeUsageInMillis);
+                    } else {
+                        totalTimeUsageInMillis = usageStats.getTotalTimeInForeground();
+                    }
+
+                    // Check if app is visible
+                    return (setTime < totalTimeUsageInMillis);
+                }
+            }
+        }
+        return false;
     }
 
 

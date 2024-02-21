@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.mindful.model.AppStats;
 import com.android.mindful.R;
+import com.android.mindful.utils.SharedPrefUtils;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,6 +58,8 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull StatAppViewHolder holder, int position) {
+        SharedPrefUtils prefUtils = new SharedPrefUtils(context);
+        String packageName = appStatsList.get(position).getPackageName();
         Drawable appIcon = appStatsList.get(position).getAppIcon();
         holder.appIcon.setImageDrawable(appIcon);
         // You may also need to set other views in the ViewHolder with corresponding data from appStatsList
@@ -84,9 +88,36 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
 
             NumberPicker hoursPicker = timerDialog.findViewById(R.id.hoursPicker);
             hoursPicker.setMaxValue(23);
+
             NumberPicker minutesPicker = timerDialog.findViewById(R.id.minutesPicker);
             minutesPicker.setMaxValue(59);
+
             timerDialog.setCancelable(false);
+            HashMap<String, Long> appTimerList = prefUtils.getAppTimer();
+            if(appTimerList.containsKey(packageName)){
+                long millis = appTimerList.get(packageName);
+                int hours = (int) (millis / (1000 * 60 * 60));
+                int minutes = (int) ((millis % (1000 * 60 * 60)) / (1000 * 60));
+                hoursPicker.setValue(hours);
+                minutesPicker.setValue(minutes);
+
+            }
+            hoursPicker.animate();
+            minutesPicker.animate();
+
+
+            timerDialog.findViewById(R.id.cancel_timer).setOnClickListener(view->{
+                timerDialog.dismiss();
+            });
+
+            timerDialog.findViewById(R.id.ok_set_timer).setOnClickListener(view->{
+                long millis = ((hoursPicker.getValue() * 60L) + minutesPicker.getValue()) * 60 * 1000;
+
+                prefUtils.setAppTimer(millis, appStatsList.get(position).getPackageName());
+                timerDialog.dismiss();
+
+            });
+
             timerDialog.show();
         });
 
@@ -180,13 +211,14 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
 
         // Get the current day of the week
         Calendar calendar = Calendar.getInstance();
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-1;
 
         // Adjust the days of the week array based on the current day
         String[] adjustedWeekDays = new String[7];
         for (int i = 0; i < 7; i++) {
             adjustedWeekDays[i] = daysOfWeek[(dayOfWeek + i) % 7];
         }
+        Log.d("StatAppAdapter", Arrays.toString(adjustedWeekDays));
         return adjustedWeekDays;
     }
 }

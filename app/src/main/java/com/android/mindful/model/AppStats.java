@@ -8,14 +8,17 @@ import com.github.mikephil.charting.data.BarDataSet;
 public class AppStats {
     private Drawable appIcon;
     private  String appName;
+    private String packageName;
+
     private BarDataSet barDataSet;
     private String dailyAvg;
     private String weekStat;
     private String compareLastWeek;
 
-    public AppStats(Drawable appIcon, String appName, BarDataSet barDataSet, String dailyAvg, String weekStat, String compareLastWeek) {
+    public AppStats(Drawable appIcon, String appName, String packageName, BarDataSet barDataSet, String dailyAvg, String weekStat, String compareLastWeek) {
         this.appIcon = appIcon;
         this.appName = appName;
+        this.packageName = packageName;
         this.barDataSet = barDataSet;
         this.dailyAvg = dailyAvg;
         this.weekStat = weekStat;
@@ -36,6 +39,14 @@ public class AppStats {
 
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 
     public BarDataSet getBarDataSet() {

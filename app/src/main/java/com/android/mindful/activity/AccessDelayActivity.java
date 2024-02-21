@@ -26,6 +26,7 @@ import com.android.mindful.model.Task;
 import com.android.mindful.utils.SharedPrefUtils;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,15 +45,22 @@ public class AccessDelayActivity extends AppCompatActivity {
 
     public String packageName;
 
+    public static boolean active;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_access_delay);
 //      Move activity to front on top of current app
         moveToFront();
+        packageName = getIntent().getStringExtra("app_package");
+
+        Log.d(TAG, "Activity active: " + active + " on " + packageName);
+
+
+
         prefUtils = new SharedPrefUtils(this);
 
-        packageName = getIntent().getStringExtra("app_package");
         delayProgressBar = findViewById(R.id.delay_progress_bar);
         taskProgress = findViewById(R.id.task_progress);
         textTaskProgress = findViewById(R.id.text_task_progress);
@@ -160,6 +168,21 @@ public class AccessDelayActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if(active)
+            startActivity(getIntent());
+        else
+            active = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finishAndRemoveTask();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
     }
@@ -183,6 +206,8 @@ public class AccessDelayActivity extends AppCompatActivity {
         // Override the back button press to do nothing (disable going back)
     }
 
+
+
     protected void moveToFront() {
         final ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final List<ActivityManager.RunningTaskInfo> recentTasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
@@ -201,5 +226,6 @@ public class AccessDelayActivity extends AppCompatActivity {
             }
         }
     }
+
 
 }

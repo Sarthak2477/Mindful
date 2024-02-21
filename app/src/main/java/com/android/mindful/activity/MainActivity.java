@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.android.mindful.service.AppAccessibilityService;
 import com.android.mindful.fragment.EditFragment;
 import com.android.mindful.R;
 import com.android.mindful.fragment.SettingsFragment;
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             prefUtils.setFirstLaunch(false);
             startActivity(new Intent(MainActivity.this, SetupActivity.class));
         }else{
-            if(!ManagePermissions.isUsagePermissionGranted(MainActivity.this) || !ManagePermissions.isAccessibilityServiceEnabled(MainActivity.this, AppAccessibilityService.class) && !prefUtils.isFirstLaunch()){
+            if(!ManagePermissions.isUsagePermissionGranted(MainActivity.this) && !prefUtils.isFirstLaunch()){
                 Intent intent = new Intent(MainActivity.this, SetupActivity.class);
                 intent.putExtra("for_permissions", true);
                 startActivity(intent);

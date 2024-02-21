@@ -1,6 +1,5 @@
    package com.android.mindful.fragment;
 
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,8 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TimePicker;
 
 import com.android.mindful.adapters.StatAppAdapter;
 import com.android.mindful.model.AppStats;
@@ -59,7 +56,10 @@ import java.util.Set;
         FloatingActionButton configureApps_btn = view.findViewById(R.id.configure_apps);
 
 
-
+        configureApps_btn.setOnClickListener(v->{
+            Intent intent = new Intent(getContext(), ConfigureAppsActivity.class);
+            startActivity(intent);
+        });
         RecyclerView recyclerView = view.findViewById(R.id.stat_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(new StatAppAdapter(getActivity(),prepareAppStatList()));
@@ -91,11 +91,12 @@ import java.util.Set;
 
                 BarDataSet barDataSet = new BarDataSet(barEntryList, "Usage");
 
-                long sum = 0;
+                long sum = 0, avg = 0;
                 for(long usage : dailyUsageList){
                     sum += usage;
                 }
-                long avg = sum /dailyUsageList.size();
+                if(!dailyUsageList.isEmpty())
+                    avg = sum /dailyUsageList.size();
                 Log.d("StatsFragment", "Average: " + avg);
                 String dailyAvg = "00m";
                 if (avg < 60) {
@@ -114,8 +115,9 @@ import java.util.Set;
                     compareLastWeek =  percentageChange+ "%";
                 }
 
+                String packageName = applicationInfo.packageName;
                 String weekStat = convertMillisecondsToString(ManageAppStats.getTotalScreenTimeForAppThisWeek(getActivity(), app));
-                appStatsList.add(new AppStats(appIcon, appName, barDataSet, dailyAvg,weekStat, compareLastWeek));
+                appStatsList.add(new AppStats(appIcon, appName, packageName, barDataSet, dailyAvg,weekStat, compareLastWeek));
             }catch (PackageManager.NameNotFoundException e){
                 Log.d("Stats", "Package Not Found: " + app);
             }

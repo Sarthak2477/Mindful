@@ -9,8 +9,10 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SharedPrefUtils {
@@ -52,7 +54,7 @@ public class SharedPrefUtils {
 
     public long getLastAppCheckTime(){
         long currentTime = System.currentTimeMillis();
-        return  preferences.getLong("lastAppCheckTime", System.currentTimeMillis()-1000);
+        return  preferences.getLong("lastAppCheckTime", System.currentTimeMillis()-10000);
     }
 
     public void setLastAppCheckTime(long time){
@@ -100,6 +102,32 @@ public class SharedPrefUtils {
         editor.putString("custom_message", message);
         editor.apply();
 
+    }
+
+    public void setAppTimer(long time, String packageName){
+        HashMap<String, Long> hashMap = getAppTimer();
+        hashMap.put(packageName, time);
+
+        // Use TypeToken to preserve Long type information during Gson conversion
+        Type type = new TypeToken<HashMap<String, Long>>() {}.getType();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(hashMap, type);
+
+        editor.putString("app_timer_list", json);
+        editor.apply();
+    }
+
+    public HashMap<String, Long> getAppTimer(){
+        Gson gson = new Gson();
+        String json = preferences.getString("app_timer_list", null);
+
+        Type type = new TypeToken<HashMap<String, Long>>() {}.getType();
+        if (json != null) {
+            return gson.fromJson(json, type);
+        } else {
+            return new HashMap<>();
+        }
     }
 
 

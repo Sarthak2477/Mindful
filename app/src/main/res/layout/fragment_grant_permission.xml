@@ -32,7 +32,7 @@
         android:backgroundTint="@color/foreground"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_below="@+id/usage_access_btn"
-        android:text="@string/accessibility_services_permissions"/>
+        android:text="Appear On Top Permission"/>
 
     <Button
         android:layout_width="match_parent"

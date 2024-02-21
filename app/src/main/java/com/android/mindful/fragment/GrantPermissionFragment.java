@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.android.mindful.service.AppAccessibilityService;
 import com.android.mindful.R;
 import com.android.mindful.activity.MainActivity;
 import com.android.mindful.managers.ManagePermissions;
@@ -95,7 +94,7 @@ public class GrantPermissionFragment extends Fragment {
             }
             Log.d("Grant Permission Fragment", "Checking Permissions");
 
-            if(ManagePermissions.isUsagePermissionGranted(getActivity()) && ManagePermissions.isAccessibilityServiceEnabled(requireContext(), AppAccessibilityService.class)){
+            if(ManagePermissions.isUsagePermissionGranted(getActivity()) ){
                 Button continueBtn = requireView().findViewById(R.id.continue_btn);
                 continueBtn.setEnabled(true);
                 Log.d("Grant Permission Fragment","Enabled Button");

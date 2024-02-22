@@ -75,6 +75,9 @@ public class ManageConfiguredApps {
             seconds %= 60;
 
             // Format the result
+            if(minutes <= 0)
+                return String.format("%02d mins %02d secs", minutes, seconds);
+
             return String.format("%02d hrs %02d mins %02d secs", hours, minutes, seconds);
         } else {
             // Handle the case when the package name is not found in the map

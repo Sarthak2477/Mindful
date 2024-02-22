@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.android.mindful.adapters.StatAppAdapter;
 import com.android.mindful.model.AppStats;
@@ -54,15 +55,20 @@ import java.util.Set;
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stats, container, false);
         FloatingActionButton configureApps_btn = view.findViewById(R.id.configure_apps);
-
+        TextView noAppsMsg = view.findViewById(R.id.text_no_apps_configured);
+        List<AppStats> appStatsList = prepareAppStatList();
 
         configureApps_btn.setOnClickListener(v->{
             Intent intent = new Intent(getContext(), ConfigureAppsActivity.class);
             startActivity(intent);
         });
-        RecyclerView recyclerView = view.findViewById(R.id.stat_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(new StatAppAdapter(getActivity(),prepareAppStatList()));
+        if(!appStatsList.isEmpty()){
+            RecyclerView recyclerView = view.findViewById(R.id.stat_recycler_view);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(new StatAppAdapter(getActivity(),appStatsList));
+        }else{
+            noAppsMsg.setVisibility(View.VISIBLE);
+        }
 
         return view;
 

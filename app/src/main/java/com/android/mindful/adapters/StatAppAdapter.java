@@ -128,7 +128,7 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
     private BarDataSet getBarDataSet(int position) {
         BarDataSet barDataSet = appStatsList.get(position).getBarDataSet();
         barDataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-           if(value != 0 || value > 0){
+           if(value >= 0){
                long minutes = (long) value;
 
                if (minutes < 60) {

@@ -8,6 +8,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.mindful.listeners.ScrollListener;
 import com.android.mindful.model.AppInfo;
 import com.android.mindful.R;
 import com.android.mindful.adapters.CustomAdapter;
@@ -60,6 +62,12 @@ public class ConfigureAppsActivity extends AppCompatActivity {
         // Initialize ExecutorService with a fixed number of threads
         executorService = Executors.newFixedThreadPool(2);
 
+        recyclerView.addOnScrollListener(new ScrollListener((RecyclerView.LayoutManager) recyclerView.getLayoutManager()) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Log.d("ConfigureAppsActvity", "Load more..");
+            }
+        });
         // Load installed apps and their usage stats asynchronously using ExecutorService
         executorService.submit(new LoadAppsTask());
     }
@@ -85,28 +93,28 @@ public class ConfigureAppsActivity extends AppCompatActivity {
     private List<AppInfo> getInstalledApps() {
         List<AppInfo> installedAppsList = new ArrayList<>();
 
-// Get the PackageManager
+        // Get the PackageManager
         PackageManager packageManager = getPackageManager();
 
-// Create an Intent for main activities labeled as launchers
+        // Create an Intent for main activities labeled as launchers
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-// Query for main activities
-        List<ResolveInfo> resolvedInfos = packageManager.queryIntentActivities(mainIntent, 0);
+        // Query for main activities
+        List<ResolveInfo> resolvedInfo = packageManager.queryIntentActivities(mainIntent, 0);
 
-// Get the package names of user-facing apps
-        Set<String> userAppsSet = new HashSet<>();
-        for (ResolveInfo resolveInfo : resolvedInfos) {
-            userAppsSet.add(resolveInfo.activityInfo.packageName);
+        // Use a SparseArray for faster lookup
+        SparseArray<Boolean> userAppsSet = new SparseArray<>();
+        for (ResolveInfo resolveInfo : resolvedInfo) {
+            userAppsSet.put(resolveInfo.activityInfo.packageName.hashCode(), true);
         }
 
-// Get a list of all installed applications
+        // Get a list of all installed applications
         List<ApplicationInfo> installedApplications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
 
         for (ApplicationInfo appInfo : installedApplications) {
             // Check if the app is a user-facing app
-            if (userAppsSet.contains(appInfo.packageName)) {
+            if (userAppsSet.get(appInfo.packageName.hashCode()) != null) {
                 // Get the app name using the method introduced before
                 String appName = ManageConfiguredApps.getAppNameFromPackageInfo(packageManager, appInfo);
                 Drawable appIcon = packageManager.getApplicationIcon(appInfo);
@@ -119,6 +127,7 @@ public class ConfigureAppsActivity extends AppCompatActivity {
 
         return installedAppsList;
     }
+
 
     @Override
     protected void onDestroy() {

@@ -66,15 +66,17 @@ public class EditFragment extends Fragment {
 
 
         addTask.setOnClickListener(v -> {
-           if(taskList != null){
-               noTaskMsg.setVisibility(View.GONE);
-               taskList.add(new Task(editText.getText().toString(), false, System.currentTimeMillis()));
-               prefUtils.saveTaskList(taskList);
-               adapter.taskList = taskList;
-               adapter.notifyDataSetChanged();
-               editText.setText("");
+            if(!editText.getText().toString().isEmpty()){
+                if (taskList != null) {
+                    noTaskMsg.setVisibility(View.GONE);
+                    taskList.add(new Task(editText.getText().toString(), false, System.currentTimeMillis()));
+                    prefUtils.saveTaskList(taskList);
+                    adapter.taskList = taskList;
+                    adapter.notifyDataSetChanged();
+                    editText.setText("");
 
-           }
+                }
+            }
 
         });
 

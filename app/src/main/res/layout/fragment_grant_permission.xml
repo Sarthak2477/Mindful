@@ -25,7 +25,7 @@
         android:text="@string/usage_access_permissions"/>
 
     <Button
-        android:id="@+id/accessibility_service_permissions_btn"
+        android:id="@+id/appear_on_top_btn"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_centerHorizontal="true"

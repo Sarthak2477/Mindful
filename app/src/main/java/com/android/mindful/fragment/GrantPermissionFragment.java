@@ -25,6 +25,7 @@ import com.android.mindful.managers.ManagePermissions;
 public class GrantPermissionFragment extends Fragment {
 
 
+    private Button usage_access_btn, appear_on_top_btn;
     public GrantPermissionFragment(){
 
     }
@@ -37,20 +38,29 @@ public class GrantPermissionFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_grant_permission, container, false);
 
-        Button usage_access_btn = view.findViewById(R.id.usage_access_btn);
-        Button accessibility_service_btn = view.findViewById((R.id.accessibility_service_permissions_btn));
+        usage_access_btn = view.findViewById(R.id.usage_access_btn);
+        appear_on_top_btn = view.findViewById((R.id.appear_on_top_btn));
         Button continue_btn = view.findViewById(R.id.continue_btn);
         continue_btn.setEnabled(false);
 
-        continue_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(requireContext(), MainActivity.class);
-                startActivity(intent);
-                requireActivity().finish();
-            }
+        continue_btn.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), MainActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
         });
-        ActivityResultLauncher<Intent> usageAccessLauncher = registerForActivityResult(
+
+
+
+        ActivityResultLauncher<Intent> appearOnTopResult = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        System.out.println("Overlay  Permission Granted");
+
+                    }
+                });
+
+        ActivityResultLauncher<Intent> usageAccessResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
@@ -59,26 +69,19 @@ public class GrantPermissionFragment extends Fragment {
                     }
                 });
 
-        ActivityResultLauncher<Intent> accessibilityLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        System.out.println("Accessibility Service Permission Granted");
-                    }
-                });
-
         usage_access_btn.setOnClickListener(v -> {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             Uri uri = Uri.fromParts("package",getActivity().getPackageName(), null);
             intent.setData(uri);
-            usageAccessLauncher.launch(intent);
+            usageAccessResult.launch(intent);
             handler.postDelayed(runnable, 1000);
 
         });
 
-        accessibility_service_btn.setOnClickListener(v -> {
-            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            accessibilityLauncher.launch(intent);
+        appear_on_top_btn.setOnClickListener(v -> {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+            intent.setData(Uri.fromParts("package", getActivity().getPackageName(), null));
+            appearOnTopResult.launch(intent);
         });
 
 
@@ -89,6 +92,12 @@ public class GrantPermissionFragment extends Fragment {
     Handler handler = new Handler();
     Runnable runnable = () -> {
         if (isAdded() && getActivity() != null) {
+            if(ManagePermissions.isUsagePermissionGranted(getActivity()))
+                usage_access_btn.setEnabled(false);
+
+            if(Settings.canDrawOverlays(getActivity()))
+                appear_on_top_btn.setEnabled(false);
+
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 return;
             }

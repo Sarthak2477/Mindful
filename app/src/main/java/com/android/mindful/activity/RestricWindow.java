@@ -10,14 +10,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.mindful.R;
 
 public class RestricWindow extends AppCompatActivity {
-
+    public static boolean active = false;
     Button closeBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_restrict_window);
-
+        if(active) finishAndRemoveTask();
         closeBtn = findViewById(R.id.close_restrict_window);
 
         closeBtn.setOnClickListener(v->{
@@ -28,5 +28,17 @@ public class RestricWindow extends AppCompatActivity {
             finishAndRemoveTask();
         });
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        active = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        active = false;
     }
 }

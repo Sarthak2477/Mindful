@@ -130,6 +130,27 @@ public class SharedPrefUtils {
         }
     }
 
+    public void setLastOpenedTime(String packageName, long time){
+        HashMap<String, Long> hashMap = getLastOpenedTime();
+        hashMap.put(packageName, time);
 
+        Type type = new TypeToken<HashMap<String, Long>>() {}.getType();
 
+        Gson gson = new Gson();
+        String json = gson.toJson(hashMap, type);
+
+        editor.putString("app_last_open_time_list", json);
+        editor.apply();
+    }
+
+    public HashMap<String, Long> getLastOpenedTime(){
+        Gson gson = new Gson();
+        String json = preferences.getString("app_last_open_time_list", null);
+        Type type = new TypeToken<HashMap<String, Long>>() {}.getType();
+        if (json != null) {
+            return gson.fromJson(json, type);
+        } else {
+            return new HashMap<>();
+        }
+    }
 }

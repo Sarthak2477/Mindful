@@ -1,9 +1,6 @@
 package com.android.mindful.adapters;
 
 import android.app.Dialog;
-import android.app.TimePickerDialog;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -12,13 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
-import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.mindful.model.AppStats;
 import com.android.mindful.R;
+import com.android.mindful.model.AppStats;
 import com.android.mindful.utils.SharedPrefUtils;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
@@ -27,18 +23,13 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
     List<AppStats> appStatsList;
@@ -65,7 +56,6 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
         // You may also need to set other views in the ViewHolder with corresponding data from appStatsList
         holder.appName.setText(appStatsList.get(position).getAppName());
         holder.dailyAvg.setText(appStatsList.get(position).getDailyAvg());
-        holder.weekStat.setText(appStatsList.get(position).getWeekStat());
 
         String compareLastWeek = appStatsList.get(position).getCompareLastWeek();
 
@@ -80,6 +70,7 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
 
         holder.barChart.setData(new BarData(getBarDataSet(position)));
         holder.barChart.getBarData().setBarWidth(0.9f);
+        holder.barChart.setClickable(false);
         holder.barChart.getBarData().setValueTextColors(Collections.singletonList(Color.WHITE));
 
         holder.setTime.setOnClickListener(v->{
@@ -159,6 +150,11 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
         //remove border of the chart, default false if not set
         barChart.setDrawBorders(false);
 
+        barChart.setTouchEnabled(false);
+
+        barChart.setHighlightPerTapEnabled(false);
+        barChart.setHighlightPerDragEnabled(false);
+
         //remove the description label text located at the lower right corner
         Description description = new Description();
         description.setEnabled(false);
@@ -211,7 +207,7 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
 
         // Get the current day of the week
         Calendar calendar = Calendar.getInstance();
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-1;
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
         // Adjust the days of the week array based on the current day
         String[] adjustedWeekDays = new String[7];

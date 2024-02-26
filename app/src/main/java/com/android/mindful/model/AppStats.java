@@ -15,7 +15,7 @@ public class AppStats {
     private String weekStat;
     private String compareLastWeek;
 
-    public AppStats(Drawable appIcon, String appName, String packageName, BarDataSet barDataSet, String dailyAvg, String weekStat, String compareLastWeek) {
+    public AppStats(Drawable appIcon, String appName, String packageName, BarDataSet barDataSet, String dailyAvg, String compareLastWeek) {
         this.appIcon = appIcon;
         this.appName = appName;
         this.packageName = packageName;

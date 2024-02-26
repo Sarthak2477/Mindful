@@ -91,6 +91,8 @@ public class ConfigureAppsActivity extends AppCompatActivity {
     }
 
     private List<AppInfo> getInstalledApps() {
+        SharedPrefUtils prefUtils = new SharedPrefUtils(this);
+        int lastCheckedAppPos = 0;
         List<AppInfo> installedAppsList = new ArrayList<>();
 
         // Get the PackageManager
@@ -121,7 +123,11 @@ public class ConfigureAppsActivity extends AppCompatActivity {
                 String stats = ManageConfiguredApps.getForegroundTimeForPackage(appInfo.packageName, this);
 
                 // Add the package name to the list
-                installedAppsList.add(new AppInfo(appName, stats, appIcon, appInfo.packageName));
+                if(prefUtils.getConfiguredApps().contains(appInfo.packageName))
+                    installedAppsList.add(0,new AppInfo(appName, stats, appIcon, appInfo.packageName));
+                else
+                    installedAppsList.add(new AppInfo(appName, stats, appIcon, appInfo.packageName));
+
             }
         }
 

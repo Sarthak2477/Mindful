@@ -122,8 +122,7 @@ import java.util.Set;
                 }
 
                 String packageName = applicationInfo.packageName;
-                String weekStat = convertMillisecondsToString(ManageAppStats.getTotalScreenTimeForAppThisWeek(getActivity(), app));
-                appStatsList.add(new AppStats(appIcon, appName, packageName, barDataSet, dailyAvg,weekStat, compareLastWeek));
+                appStatsList.add(new AppStats(appIcon, appName, packageName, barDataSet, dailyAvg, compareLastWeek));
             }catch (PackageManager.NameNotFoundException e){
                 Log.d("Stats", "Package Not Found: " + app);
             }

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.mindful.R;
 import com.android.mindful.adapters.TasksAdapter;
+import com.android.mindful.managers.ManageAppStats;
 import com.android.mindful.model.Task;
 import com.android.mindful.utils.SharedPrefUtils;
 
@@ -99,7 +100,6 @@ public class AccessDelayActivity extends AppCompatActivity {
         }
 
 
-        UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
 
 
         // Get the current time in milliseconds
@@ -112,32 +112,28 @@ public class AccessDelayActivity extends AppCompatActivity {
         calendar.set(Calendar.SECOND, 0);
         long startMillis = calendar.getTimeInMillis();
 
-        Map<String, UsageStats> lUsageStatsMap = usageStatsManager.queryAndAggregateUsageStats(startMillis, endMillis);
-        UsageStats usageStats = lUsageStatsMap.get(packageName);
 
-        if(usageStats != null){
-            long totalTimeUsageInMillis = usageStats.getTotalTimeInForeground();
-            //
-            long delayTime = calculateDelayTime((int) totalTimeUsageInMillis);
-            Log.d(TAG, "Delay Time: " + delayTime);
-            new CountDownTimer(delayTime, 100) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    // Calculate the progress and update the ProgressBar
-                    int progress = (int) ((delayTime - millisUntilFinished) * 100 / delayTime);
-                    delayProgressBar.setProgress(progress);
-                }
+        long totalTimeUsageInMillis = ManageAppStats.getUsageStatistics(this, packageName, startMillis, endMillis).timeInForeground;
+        //
+        long delayTime = calculateDelayTime((int) totalTimeUsageInMillis);
+        Log.d(TAG, "Delay Time: " + delayTime);
+        new CountDownTimer(delayTime, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // Calculate the progress and update the ProgressBar
+                int progress = (int) ((delayTime - millisUntilFinished) * 100 / delayTime);
+                delayProgressBar.setProgress(progress);
+            }
 
-                @Override
-                public void onFinish() {
-                    Animation fadeIn = new AlphaAnimation(0.0f, 1.0f);
-                    fadeIn.setDuration(500); // Adjust the duration of the fade-in animation as needed
+            @Override
+            public void onFinish() {
+                Animation fadeIn = new AlphaAnimation(0.0f, 1.0f);
+                fadeIn.setDuration(500); // Adjust the duration of the fade-in animation as needed
 
-                    continueBtn.setVisibility(View.VISIBLE);
-                    continueBtn.startAnimation(fadeIn);
-                }
-            }.start();
-        }
+                continueBtn.setVisibility(View.VISIBLE);
+                continueBtn.startAnimation(fadeIn);
+            }
+        }.start();
 
 
 

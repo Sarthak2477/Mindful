@@ -1,7 +1,10 @@
 package com.android.mindful.adapters;
 
+
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -60,13 +63,14 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
         String compareLastWeek = appStatsList.get(position).getCompareLastWeek();
 
         if(compareLastWeek.charAt(0) == '+'){
-            holder.comparedLastWeek.setTextColor(Color.RED);
+            holder.comparedLastWeek.setTextColor(Color.parseColor("#c23848"));
         }else{
-            holder.comparedLastWeek.setTextColor(Color.GREEN);
+            holder.comparedLastWeek.setTextColor(Color.parseColor("#74c487"));
         }
         holder.comparedLastWeek.setText(compareLastWeek);
 
         initBarChart(holder.barChart);
+
 
         holder.barChart.setData(new BarData(getBarDataSet(position)));
         holder.barChart.getBarData().setBarWidth(0.9f);
@@ -118,6 +122,14 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
     @NonNull
     private BarDataSet getBarDataSet(int position) {
         BarDataSet barDataSet = appStatsList.get(position).getBarDataSet();
+        int currentNightMode = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        if (currentNightMode == Configuration.UI_MODE_NIGHT_YES)
+            barDataSet.setColors(Color.WHITE);
+        else
+            barDataSet.setColors(Color.BLACK);
+
+
         barDataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
            if(value >= 0){
                long minutes = (long) value;
@@ -160,7 +172,11 @@ public class StatAppAdapter extends RecyclerView.Adapter<StatAppViewHolder> {
         description.setEnabled(false);
         barChart.setDescription(description);
         barChart.setBorderColor(Color.WHITE);
-        barChart.setBackgroundColor(0xC4B6E8);
+        barChart.setNoDataTextColor(Color.WHITE);
+
+        barChart.setBackgroundColor(0x0B0813);
+
+
 
 
         //setting animation for y-axis, the bar will pop up from 0 to its value within the time we set

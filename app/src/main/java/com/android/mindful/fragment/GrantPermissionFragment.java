@@ -2,6 +2,7 @@ package com.android.mindful.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -56,7 +57,9 @@ public class GrantPermissionFragment extends Fragment {
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         System.out.println("Overlay  Permission Granted");
-
+                        appear_on_top_btn.setEnabled(false);
+//                        appear_on_top_btn.setTextColor(Color.GRAY);
+//                        appear_on_top_btn.setBackgroundColor(Color.GRAY);
                     }
                 });
 
@@ -65,16 +68,20 @@ public class GrantPermissionFragment extends Fragment {
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         System.out.println("Usage Access Permission Granted");
+                        usage_access_btn.setEnabled(false);
+//                        usage_access_btn.setTextColor(Color.GRAY);
+//                        usage_access_btn.setBackgroundColor(Color.GRAY);
 
                     }
                 });
+
+        handler.postDelayed(runnable, 1000);
 
         usage_access_btn.setOnClickListener(v -> {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             Uri uri = Uri.fromParts("package",getActivity().getPackageName(), null);
             intent.setData(uri);
             usageAccessResult.launch(intent);
-            handler.postDelayed(runnable, 1000);
 
         });
 
@@ -92,25 +99,34 @@ public class GrantPermissionFragment extends Fragment {
     Handler handler = new Handler();
     Runnable runnable = () -> {
         if (isAdded() && getActivity() != null) {
-            if(ManagePermissions.isUsagePermissionGranted(getActivity()))
-                usage_access_btn.setEnabled(false);
 
-            if(Settings.canDrawOverlays(getActivity()))
-                appear_on_top_btn.setEnabled(false);
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 return;
             }
             Log.d("Grant Permission Fragment", "Checking Permissions");
 
-            if(ManagePermissions.isUsagePermissionGranted(getActivity()) ){
+            if(ManagePermissions.isUsagePermissionGranted(getActivity())){
+                usage_access_btn.setEnabled(false);
+                usage_access_btn.setTextColor(Color.parseColor("#FD4A4646"));
+                usage_access_btn.setBackgroundColor(Color.parseColor("#FD6C6B6B"));
+            }
+
+
+            if(Settings.canDrawOverlays(getActivity())){
+                appear_on_top_btn.setEnabled(false);
+                appear_on_top_btn.setTextColor(Color.parseColor("#FD4A4646"));
+                appear_on_top_btn.setBackgroundColor(Color.parseColor("#FD6C6B6B"));
+            }
+
+            if(ManagePermissions.isUsagePermissionGranted(getActivity()) && Settings.canDrawOverlays(getActivity())){
                 Button continueBtn = requireView().findViewById(R.id.continue_btn);
                 continueBtn.setEnabled(true);
-                Log.d("Grant Permission Fragment","Enabled Button");
-                handler.removeCallbacks(this.runnable);
-            }else{
-                handler.postDelayed(this.runnable, 1000);
+                continueBtn.setTextColor(Color.WHITE);
             }
+
+
+            handler.postDelayed( this.runnable, 1000);
         }
     };
 }

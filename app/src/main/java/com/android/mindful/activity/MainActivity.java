@@ -1,6 +1,8 @@
 package com.android.mindful.activity;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -57,22 +59,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
 
-            if (!Settings.canDrawOverlays(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName()));
-                registerForActivityResult(
-                        new ActivityResultContracts.StartActivityForResult(),
-                        result -> {
-                            if (result.getResultCode() == Activity.RESULT_OK) {
-                                System.out.println("Overlay   Permission Granted");
-
-                            }
-                        }).launch(intent);
+            if(!isServiceRunning(this, AppForegroundService.class)){
+                Intent serviceIntent = new Intent(this, AppForegroundService.class);
+                startService(serviceIntent);
             }
-
-            Intent serviceIntent = new Intent(this, AppForegroundService.class);
-            startService(serviceIntent);
-
 
             BottomNavigationView bottomNavView = findViewById(R.id.bottom_navigation);
             bottomNavView.setOnItemSelectedListener(navItemSelectedListener);
@@ -107,5 +97,17 @@ public class MainActivity extends AppCompatActivity {
 
         // Commit the transaction
         transaction.commit();
+    }
+
+    public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager != null) {
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

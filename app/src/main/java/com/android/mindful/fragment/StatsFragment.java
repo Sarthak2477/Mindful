@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -58,6 +60,7 @@ import java.util.Set;
         TextView noAppsMsg = view.findViewById(R.id.text_no_apps_configured);
         List<AppStats> appStatsList = prepareAppStatList();
 
+        configureApps_btn.setImageTintList(ColorStateList.valueOf(Color.parseColor("#000000")));
         configureApps_btn.setOnClickListener(v->{
             Intent intent = new Intent(getContext(), ConfigureAppsActivity.class);
             startActivity(intent);

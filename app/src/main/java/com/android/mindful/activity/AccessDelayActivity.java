@@ -33,12 +33,12 @@ import java.util.Map;
 
 public class AccessDelayActivity extends AppCompatActivity {
 
-    private ProgressBar delayProgressBar, taskProgress;
+    private ProgressBar delayProgressBar;
     SharedPrefUtils prefUtils;
 
     public String TAG = "Access Delay Activity";
 
-    private TextView textTaskProgress, textCustomMessage;
+    private TextView  textCustomMessage;
 
     public RecyclerView recyclerView;
 
@@ -63,8 +63,6 @@ public class AccessDelayActivity extends AppCompatActivity {
         prefUtils = new SharedPrefUtils(this);
 
         delayProgressBar = findViewById(R.id.delay_progress_bar);
-        taskProgress = findViewById(R.id.task_progress);
-        textTaskProgress = findViewById(R.id.text_task_progress);
         recyclerView = findViewById(R.id.delay_screen_recycler_view);
         addTask = findViewById(R.id.delay_screen_add_task);
         textCustomMessage = findViewById(R.id.delay_screen_custom_message);
@@ -75,14 +73,6 @@ public class AccessDelayActivity extends AppCompatActivity {
 
 
         if(!taskList.isEmpty()){
-            int completedTask = 0;
-            for(Task task : taskList){
-                if(task.isCompleted()) completedTask++;
-            }
-            int percentTaskCompleted = (int) ((completedTask / (double) taskList.size()) * 100);
-            Log.d(TAG,"Task Completed: " + percentTaskCompleted);
-            taskProgress.setProgress(percentTaskCompleted, true);
-            textTaskProgress.setText(percentTaskCompleted + "%");
 
             Log.d(TAG, "Task List: " + taskList);
 
@@ -94,8 +84,6 @@ public class AccessDelayActivity extends AppCompatActivity {
         }else{
             findViewById(R.id.no_task_at_delay_screen).setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
-            taskProgress.setVisibility(View.GONE);
-            textTaskProgress.setVisibility(View.GONE);
 
         }
 
@@ -138,6 +126,7 @@ public class AccessDelayActivity extends AppCompatActivity {
 
 
         addTask.setOnClickListener(v->{
+            active = false;
             Intent intent = new Intent(AccessDelayActivity.this, MainActivity.class);
             startActivity(intent);
         });
@@ -175,7 +164,8 @@ public class AccessDelayActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        finishAndRemoveTask();
+        if(active)
+            finishAndRemoveTask();
     }
 
     @Override

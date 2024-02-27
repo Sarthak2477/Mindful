@@ -11,9 +11,11 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
+        app:title="Configure Apps"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/foreground"
+        android:background="@color/bg"
         app:titleTextColor="@android:color/white"
+        app:titleTextAppearance="@font/ibm_plex_mono_medium"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <!-- Add a Button to the right side of the Toolbar -->

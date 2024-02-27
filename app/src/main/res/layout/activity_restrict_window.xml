@@ -11,7 +11,7 @@
         android:layout_gravity="center"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:text="Enough for today"/>
+        android:text="Enough For Today"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -33,6 +33,7 @@
         android:id="@+id/close_restrict_window"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/foreground"
         android:layout_gravity="center"
         android:text="Close"
         android:layout_margin="60dp"

@@ -9,7 +9,7 @@
    <com.google.android.material.card.MaterialCardView
        android:layout_centerHorizontal="true"
        android:layout_width="match_parent"
-       android:backgroundTint="@color/foreground"
+       android:backgroundTint="@color/bg"
        android:layout_height="wrap_content">
 
       <LinearLayout
@@ -20,18 +20,20 @@
           tools:ignore="MissingClass">
           <LinearLayout
               android:layout_width="match_parent"
+              android:layout_marginTop="10dp"
               android:rowCount="1"
               android:layout_gravity="center"
               android:layout_height="wrap_content">
 
               <ImageView
+                  android:layout_margin="20dp"
                   android:id="@+id/app_stat_icon"
-                  android:layout_width="100dp"
+                  android:layout_width="60dp"
                   android:layout_height="60dp"
                   android:src="@android:drawable/sym_def_app_icon" />
               <TextView
                   android:id="@+id/app_stat_name"
-                  android:layout_width="wrap_content"
+                  android:layout_width="match_parent"
                   android:layout_height="match_parent"
                   android:text="App Name"
                   android:textSize="25sp"
@@ -45,33 +47,48 @@
               android:layout_gravity="center"
               android:layout_marginTop="10dp"
               android:rowCount="1">
-              <TextView
-                  android:id="@+id/week_stat"
+
+              <LinearLayout
+                  android:layout_height="wrap_content"
                   android:layout_width="wrap_content"
-                  android:layout_height="match_parent"
                   android:layout_columnWeight="1"
-                  android:layout_gravity="center"
-                  android:textSize="15sp"
-                  android:gravity="center"
-                  android:text="This Week: \n10h 29m"/>
-              <TextView
-                  android:id="@+id/daily_avg"
+                  android:orientation="vertical">
+                  <TextView
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:gravity="center"
+                      android:textSize="12sp"
+                      android:text="Dail Average: "/>
+                  <TextView
+                      android:id="@+id/daily_avg"
+                      android:layout_width="wrap_content"
+                      android:layout_height="match_parent"
+                      android:textSize="18sp"
+                      android:layout_gravity="center"
+                      android:gravity="center"
+                      android:text="00h 00m"/>
+              </LinearLayout>
+
+              <LinearLayout
                   android:layout_width="wrap_content"
-                  android:layout_height="match_parent"
+                  android:layout_height="wrap_content"
                   android:layout_columnWeight="1"
-                  android:textSize="15sp"
-                  android:layout_gravity="center"
-                  android:gravity="center"
-                  android:text="Daily Average: \n1h 29m"/>
-              <TextView
-                  android:id="@+id/cmprd_last_week"
-                  android:layout_width="wrap_content"
-                  android:layout_height="match_parent"
-                  android:layout_columnWeight="1"
-                  android:textSize="15sp"
-                  android:layout_gravity="center"
-                  android:gravity="center"
-                  android:text="Last Week: 4%"/>
+                  android:orientation="vertical">
+                  <TextView
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:gravity="center"
+                      android:textSize="12sp"
+                      android:text="Compared to last week: "/>
+                  <TextView
+                      android:id="@+id/cmprd_last_week"
+                      android:layout_width="wrap_content"
+                      android:layout_height="match_parent"
+                      android:textSize="18sp"
+                      android:layout_gravity="center"
+                      android:gravity="center"
+                      android:text="0%"/>
+              </LinearLayout>
           </GridLayout>
           <com.github.mikephil.charting.charts.BarChart
               android:id="@+id/barChart"
@@ -83,6 +100,7 @@
               android:layout_height="wrap_content"
               android:layout_gravity="center"
               android:text="Set Time"
+              android:textColor="@color/foreground"
               style="?attr/materialButtonOutlinedStyle"
               android:layout_margin="10dp"/>
       </LinearLayout>

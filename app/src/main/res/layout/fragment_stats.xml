@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/bg"
     android:padding="20dp"
     tools:context=".fragment.StatsFragment">
@@ -13,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="App Stats"
+        android:layout_marginBottom="10dp"
         android:textSize="30sp"/>
 
     <TextView
@@ -25,31 +27,30 @@
         android:textStyle="italic"
         android:text="No apps are configured\n\nPress '+' to configure apps"/>
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/text_app_stats"
-        android:layout_height="match_parent">
+
 
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="100dp"
             android:id="@+id/stat_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
 
         />
 
 
-    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/configure_apps"
         android:src="@drawable/icon_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTintMode="src_atop"
         android:layout_alignEnd="@+id/text_app_stats"
         android:layout_gravity="end"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40dp"
+        android:backgroundTint="#FFFFFF"
+        android:layout_marginBottom="80dp"
         android:layout_marginRight="30dp"
         android:contentDescription="TODO" />
     <!--        </LinearLayout>-->

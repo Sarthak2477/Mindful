@@ -30,7 +30,7 @@
            android:layout_width="match_parent"
            android:layout_height="1dp"
            android:layout_gravity="bottom"
-           android:background="#CFBBFE" />
+           android:background="@color/foreground" />
 
        <TextView
            android:layout_width="match_parent"
@@ -42,8 +42,9 @@
            android:layout_width="match_parent"
            android:layout_height="1dp"
            android:layout_gravity="bottom"
-           android:background="#CFBBFE" />
+           android:background="@color/foreground" />
        <TextView
+           android:id="@+id/text_privacy_policy"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:layout_margin="10dp"
@@ -53,7 +54,7 @@
            android:layout_width="match_parent"
            android:layout_height="1dp"
            android:layout_gravity="bottom"
-           android:background="#CFBBFE" />
+           android:background="@color/foreground" />
    </LinearLayout>
 
 </LinearLayout>

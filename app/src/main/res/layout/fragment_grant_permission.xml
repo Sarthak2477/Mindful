@@ -20,7 +20,8 @@
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
         android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/foreground"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/black"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:text="@string/usage_access_permissions"/>
 
@@ -29,7 +30,8 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_centerHorizontal="true"
-        android:backgroundTint="@color/foreground"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/black"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_below="@+id/usage_access_btn"
         android:text="Appear On Top Permission"/>

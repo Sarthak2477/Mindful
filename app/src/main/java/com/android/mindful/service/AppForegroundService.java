@@ -1,8 +1,5 @@
 package com.android.mindful.service;
 
-import static android.util.Log.d;
-
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -27,12 +24,9 @@ import com.android.mindful.managers.ManageAppStats;
 import com.android.mindful.model.AppUsageInfo;
 import com.android.mindful.utils.SharedPrefUtils;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
@@ -49,10 +43,15 @@ public class AppForegroundService extends Service {
 
     private UsageStatsManager usageStatsManager;
 
-    private List<AppUsageInfo> smallInfoList;
+
+    public boolean isBooleanAppBlockHandlerRunning = false;
+
+    private Intent homeIntent;
 
     public AppForegroundService() {
     }
+
+
 
     @Override
     public void onCreate() {
@@ -69,6 +68,10 @@ public class AppForegroundService extends Service {
         if (prefUtils == null) {
             prefUtils = new SharedPrefUtils(this);
         }
+
+        homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         // Schedule a task to check app usage periodically
         handler.postDelayed(new Runnable() {
@@ -128,35 +131,41 @@ public class AppForegroundService extends Service {
             UsageEvents.Event usageEvent = new UsageEvents.Event();
             usageEvents.getNextEvent(usageEvent);
             String packageName = usageEvent.getPackageName();
+
             Handler appBlockHandler =  new Handler(getMainLooper());
             Set<String> configuredApps = prefUtils.getConfiguredApps();
+
             if (usageEvent.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED) {
 
-                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-                homeIntent.addCategory(Intent.CATEGORY_HOME);
-                homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                Runnable runnable = () -> {
+                    Log.d(TAG, "Current App: " + getCurrentApp());
+                    if(getCurrentApp().equals(packageName)){
+                        startActivity(homeIntent);
+                        Intent intent = new Intent(AppForegroundService.this, RestricWindow.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                    isBooleanAppBlockHandlerRunning = false;
+                };
 
 
+                if(isBooleanAppBlockHandlerRunning){
+                    Log.d(TAG, "handler stopped");
+                    appBlockHandler.removeCallbacks(runnable);
+                    isBooleanAppBlockHandlerRunning = false;
 
+                }
                 if(configuredApps.contains(packageName)){
+
                     prefUtils.setLastOpenedTime(packageName, System.currentTimeMillis());
                     long delay = 0;
                     HashMap<String, Long> appTimerList = prefUtils.getAppTimer();
                     long appTime = prefUtils.getAppTimer().get(packageName);
 
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            if(getCurrentApp().equals(packageName)){
-                                Intent intent = new Intent(AppForegroundService.this, RestricWindow.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        }
-                    };
-                    if(appTimerList.containsKey(packageName) && appTime > 0){
-                        appBlockHandler.removeCallbacks(runnable);
-                        appBlockHandler.removeCallbacksAndMessages(runnable);
+
+                    if(appTimerList.containsKey(packageName) && appTime != 0){
+
 
                         long currTime = System.currentTimeMillis();
                         Calendar calendar = Calendar.getInstance();
@@ -170,11 +179,14 @@ public class AppForegroundService extends Service {
                         Log.d(TAG, "Usage time: " + usageTime);
                         delay = appTime - usageTime;
 
-                        Log.d(TAG, "App timer: " + prefUtils.getAppTimer().get(packageName));
+                        Log.d(TAG, "App timer: " + appTime);
                         Log.d(TAG, "App will close after " + delay/1000);
                         if(delay > 0){
+                            Log.d(TAG, "postdelayed called for " + delay + " millis");
+                            isBooleanAppBlockHandlerRunning = true;
                             appBlockHandler.postDelayed(runnable, delay);
                         }else if (delay < 0){
+                            startActivity(homeIntent);
                             Intent intent = new Intent(AppForegroundService.this, RestricWindow.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
@@ -186,7 +198,11 @@ public class AppForegroundService extends Service {
                             && !RestricWindow.active
                             && delay >= 0
                             ) {
-
+                            if(isBooleanAppBlockHandlerRunning){
+                                Log.d(TAG, "handler stopped");
+                                appBlockHandler.removeCallbacks(runnable);
+                                isBooleanAppBlockHandlerRunning = false;
+                            }
                             startActivity(homeIntent);
                             Intent i = new Intent(AppForegroundService.this, AccessDelayActivity.class);
                             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -199,25 +215,17 @@ public class AppForegroundService extends Service {
                 prefUtils.setLastAppCheckTime(System.currentTimeMillis());
             }
 
-            if(usageEvent.getEventType() == UsageEvents.Event.ACTIVITY_STOPPED || usageEvent.getEventType() == UsageEvents.Event.ACTIVITY_PAUSED ){
-                if(configuredApps.contains(packageName)){
-                    Log.d(TAG, "handler stopped.");
-                }
-            }
+
         }
     }
-
-
-
-
 
     public String getCurrentApp(){
         String currentApp = "";
         long currentTime = System.currentTimeMillis();
-        List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, currentTime - 10000, currentTime);
+        List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, currentTime - 60000, currentTime);
 
         // Get the package name of the currently running app from the UsageStats object.
-        if (usageStats != null && usageStats.size() > 0) {
+        if (usageStats != null && !usageStats.isEmpty()) {
             SortedMap<Long, UsageStats> mySortedMap = new TreeMap<>();
             for (UsageStats usageStat : usageStats) {
                 mySortedMap.put(usageStat.getLastTimeUsed(), usageStat);
@@ -228,6 +236,7 @@ public class AppForegroundService extends Service {
         }
         return currentApp;
     }
+
 
 
 

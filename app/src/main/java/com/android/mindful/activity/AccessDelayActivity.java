@@ -164,8 +164,11 @@ public class AccessDelayActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(active)
+        if(active){
+            Log.d(TAG, "Activity removed");
             finishAndRemoveTask();
+            active = false;
+        }
     }
 
     @Override
@@ -212,6 +215,5 @@ public class AccessDelayActivity extends AppCompatActivity {
             }
         }
     }
-
 
 }
